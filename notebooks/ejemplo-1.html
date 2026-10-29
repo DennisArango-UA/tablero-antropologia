@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notebook de ejemplo 1</title>
+<style>
+  body{margin:0;background:#fff;color:#1a1a1a;font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .nb{max-width:900px;margin:0 auto;padding:24px 20px 60px}
+  .cell{display:flex;gap:10px;margin:0 0 14px;align-items:flex-start}
+  .prompt{flex:0 0 72px;text-align:right;color:#307fc1;font:13px/1.5 "SFMono-Regular",Consolas,monospace;padding-top:8px;user-select:none}
+  .prompt.out{color:#bf5b3d}
+  .md{flex:1}
+  .md h1{font-size:28px;margin:.2em 0 .4em;border-bottom:1px solid #eee;padding-bottom:.2em}
+  .md h2{font-size:21px;margin:1em 0 .4em}
+  .md p{margin:.4em 0}
+  .md ul{margin:.3em 0 .3em 1.2em;padding:0}
+  .code{flex:1;background:#f7f7f7;border:1px solid #e3e3e3;border-radius:4px;padding:8px 12px;overflow:auto;
+        font:13px/1.55 "SFMono-Regular",Consolas,monospace}
+  .code .k{color:#008000;font-weight:600}.code .s{color:#ba2121}.code .c{color:#408080;font-style:italic}.code .n{color:#307fc1}
+  .out{flex:1;padding:4px 12px;font:13px/1.55 "SFMono-Regular",Consolas,monospace;white-space:pre-wrap}
+  table.df{border-collapse:collapse;font-size:13px;margin:4px 0}
+  table.df th,table.df td{border:1px solid #ddd;padding:4px 10px;text-align:right}
+  table.df th{background:#f2f2f2}
+  table.df td:first-child,table.df th:first-child{text-align:left;color:#777}
+  .tag{display:inline-block;background:#eef;border:1px solid #ccd;border-radius:3px;padding:1px 8px;font-size:12px;color:#447}
+  svg{max-width:100%}
+</style>
+</head>
+<body>
+<div class="nb">
+
+  <div class="cell"><div class="md">
+    <h1>Ejemplo 1 · Análisis exploratorio</h1>
+    <p><span class="tag">Notebook de ejemplo</span> Este es un marcador de posición para mostrar cómo se verá un
+    cuaderno real dentro del tablero. Reemplázalo convirtiendo tu <code>.ipynb</code> a HTML.</p>
+    <p>Objetivo: describir el conjunto de datos, revisar su calidad y mostrar un primer gráfico.</p>
+  </div></div>
+
+  <div class="cell"><div class="prompt">In&nbsp;[1]:</div><div class="code"><span class="k">import</span> pandas <span class="k">as</span> pd
+<span class="k">import</span> matplotlib.pyplot <span class="k">as</span> plt
+
+df = pd.read_csv(<span class="s">"datos.csv"</span>)
+df.shape</div></div>
+  <div class="cell"><div class="prompt out">Out[1]:</div><div class="out">(1240, 8)</div></div>
+
+  <div class="cell"><div class="md">
+    <h2>Primeras filas</h2>
+    <p>Una muestra para entender la estructura de las columnas.</p>
+  </div></div>
+
+  <div class="cell"><div class="prompt">In&nbsp;[2]:</div><div class="code">df.head(<span class="n">4</span>)</div></div>
+  <div class="cell"><div class="prompt out">Out[2]:</div><div class="out"><table class="df">
+    <tr><th></th><th>categoria</th><th>valor</th><th>año</th><th>region</th></tr>
+    <tr><td>0</td><td>A</td><td>128</td><td>2023</td><td>Andina</td></tr>
+    <tr><td>1</td><td>B</td><td>96</td><td>2023</td><td>Caribe</td></tr>
+    <tr><td>2</td><td>A</td><td>141</td><td>2024</td><td>Andina</td></tr>
+    <tr><td>3</td><td>C</td><td>73</td><td>2024</td><td>Pacífica</td></tr>
+  </table></div></div>
+
+  <div class="cell"><div class="md">
+    <h2>Distribución por categoría</h2>
+  </div></div>
+
+  <div class="cell"><div class="prompt">In&nbsp;[3]:</div><div class="code">(df.groupby(<span class="s">"categoria"</span>)[<span class="s">"valor"</span>]
+   .sum().sort_values().plot.barh(color=<span class="s">"#364775"</span>))
+plt.xlabel(<span class="s">"Valor total"</span>); plt.show()</div></div>
+  <div class="cell"><div class="prompt out">Out[3]:</div><div class="out">
+    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Gráfico de barras de ejemplo">
+      <g font-family="sans-serif" font-size="12" fill="#333">
+        <text x="8" y="28">C</text><rect x="40" y="18" width="150" height="16" fill="#364775"/><text x="198" y="31">150</text>
+        <text x="8" y="58">B</text><rect x="40" y="48" width="240" height="16" fill="#364775"/><text x="288" y="61">240</text>
+        <text x="8" y="88">A</text><rect x="40" y="78" width="400" height="16" fill="#364775"/><text x="448" y="91">400</text>
+      </g>
+      <line x1="40" y1="12" x2="40" y2="110" stroke="#ccc"/>
+    </svg>
+  </div></div>
+
+  <div class="cell"><div class="md">
+    <h2>Conclusiones</h2>
+    <ul>
+      <li>La categoría A concentra el mayor valor acumulado.</li>
+      <li>Los datos cubren 2023 y 2024 en cuatro regiones.</li>
+      <li>No se observan valores faltantes en las columnas revisadas.</li>
+    </ul>
+    <p><em>Fin del notebook de ejemplo.</em></p>
+  </div></div>
+
+</div>
+</body>
+</html>
