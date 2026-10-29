@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero Antropología</title>
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#ffffff; --ink:#1C2236; --muted:#4f5a78; --line:#DAE1F2; --accent:#364775; --accent-ink:#ffffff;
+  --track:#e9edf7; --warn-bg:#fff4e5; --warn-line:#FECA8E; --hero1:#1C2236; --hero2:#222D4E;
+  --c1:#364775; --c2:#F36F0F; --c3:#96B3DF; --c4:#C23319; --c5:#FEAA46;
+  --shadow:0 1px 2px rgba(28,34,54,.06),0 2px 8px rgba(28,34,54,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#141829; --panel:#1C2236; --ink:#eef1fa; --muted:#a8b3d1; --line:#2d3860; --accent:#96B3DF; --accent-ink:#141829;
+    --track:#2a3558; --warn-bg:#2f2616; --warn-line:#7a5a2a; --hero1:#0f1322; --hero2:#1C2236;
+    --c1:#96B3DF; --c2:#F36F0F; --c3:#5d78b4; --c4:#e0583f; --c5:#FEAA46; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141829; --panel:#1C2236; --ink:#eef1fa; --muted:#a8b3d1; --line:#2d3860; --accent:#96B3DF; --accent-ink:#141829;
+  --track:#2a3558; --warn-bg:#2f2616; --warn-line:#7a5a2a; --hero1:#0f1322; --hero2:#1C2236;
+  --c1:#96B3DF; --c2:#F36F0F; --c3:#5d78b4; --c4:#e0583f; --c5:#FEAA46; --shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 Verdana,Geneva,sans-serif}
+header{background:var(--hero1);color:#fff;position:sticky;top:0;z-index:5;border-bottom:3px solid #F36F0F}
+header .sub{color:rgba(255,255,255,.85)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0 8px}
+h1{font-size:clamp(15px,3.2vw,20px);margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+nav{display:flex;gap:8px;overflow-x:auto;padding:4px 0 14px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav button{background:transparent;border:1px solid rgba(255,255,255,.28);border-radius:4px;padding:7px 14px;font:inherit;font-size:13px;color:#DAE1F2;cursor:pointer;white-space:nowrap}
+nav button:hover{background:rgba(255,255,255,.12)}
+nav button[aria-selected="true"]{background:#fff;color:#1C2236;font-weight:700;border-color:#fff}
+button.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:6px 12px;font:inherit;font-size:12px;cursor:pointer}
+header button.ghost{background:transparent;color:#DAE1F2;border-color:rgba(255,255,255,.28)}
+button.ghost:hover{border-color:var(--accent)}
+button.ghost[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+main{padding:20px 0 48px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow)}
+.panel{padding:16px 18px;margin-bottom:16px}
+.panel h2{font-size:15px;margin:0 0 8px}
+.panel ul{margin:0;padding-left:20px}
+.panel li{margin:3px 0}
+.warn{background:var(--warn-bg);border-color:var(--warn-line)}
+details.panel summary{cursor:pointer;font-weight:600;font-size:15px}
+details.panel[open] summary{margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:16px}
+.chart-card{padding:16px 18px 14px;display:flex;flex-direction:column;min-width:0;border-top:3px solid var(--accent)}
+.chart-card h3{font-size:13.5px;margin:0 0 2px;line-height:1.3}
+.nota{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+.tools{display:flex;gap:6px;margin-top:auto;padding-top:10px;flex-wrap:wrap}
+.tema{margin-top:26px;scroll-margin-top:130px}
+.tema[hidden]{display:none}
+.tema-t{font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 12px;display:flex;align-items:center;gap:10px;color:var(--ink)}
+.tema-t::before{content:"";width:6px;height:22px;border-radius:1px;background:#F36F0F}
+.tema-t span{font-size:12px;font-weight:600;background:var(--track);color:var(--muted);border-radius:3px;padding:1px 8px;text-transform:none;letter-spacing:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.chip{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:4px;padding:5px 12px;font:inherit;font-size:12px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.barra{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+input[type=search]{flex:1 1 220px;max-width:420px;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);font:inherit}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;margin-bottom:8px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.hbar{display:grid;grid-template-columns:minmax(90px,38%) 1fr;gap:6px 10px;align-items:center;font-size:13px}
+.hbar .lab{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}
+.hbar .pistas{display:flex;flex-direction:column;gap:3px;padding:2px 0}
+.pista{display:flex;align-items:center;gap:6px}
+.pista .tr{flex:1;background:var(--track);border-radius:2px;height:14px}
+.pista .rel{height:100%;border-radius:2px;min-width:3px}
+.pista .val{min-width:46px;font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink)}
+.vbar{display:flex;align-items:flex-end;gap:6px;height:240px;padding-top:18px;border-bottom:1px solid var(--line)}
+.vcol{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.vgrp{display:flex;align-items:flex-end;gap:2px;height:100%;width:100%;justify-content:center}
+.vgrp div{flex:1;max-width:44px;border-radius:2px 2px 0 0;position:relative;min-height:2px}
+.vgrp span{position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+.vlabs{display:flex;gap:6px;margin-top:5px}
+.vlabs div{flex:1;min-width:0;text-align:center;font-size:11.5px;color:var(--muted);line-height:1.2;overflow-wrap:anywhere}
+table.t{border-collapse:collapse;width:100%;font-size:13px}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{max-height:340px;overflow:auto}
+dialog{border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);padding:0;width:min(980px,94vw);max-height:90vh}
+dialog::backdrop{background:rgba(10,15,25,.55)}
+.dlg-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px 20px 0}
+.dlg-head h3{margin:0;font-size:17px}
+.dlg-body{padding:12px 20px 20px;overflow:auto;max-height:calc(90vh - 80px)}
+.inicio{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.inicio .card{padding:20px 20px 18px;display:flex;flex-direction:column;gap:6px;border-top:3px solid var(--accent);min-height:150px}
+.inicio h2{margin:0;font-size:15px}
+.inicio .n{font-size:34px;font-weight:700;line-height:1;color:var(--accent);margin-top:6px}
+.inicio button{margin-top:auto;align-self:flex-start}
+.vacio{color:var(--muted);padding:30px;text-align:center}
+footer{color:var(--muted);font-size:12.5px;padding:0 0 30px}
+@media (max-width:560px){.hbar{grid-template-columns:minmax(80px,40%) 1fr}.wrap{padding:0 12px}.top{flex-wrap:wrap}.tools .ghost{flex:1 1 auto;text-align:center}.vbar{height:200px}.grid{gap:12px}dialog{width:98vw}.dlg-body{padding:10px 12px 16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Antropología Uniandes: tablero de estudios</h1>
+        <div class="sub" id="sub"></div>
+      </div>
+      <button class="ghost" id="tema" aria-pressed="false" title="Cambiar entre claro y oscuro">Modo oscuro</button>
+    </div>
+    <nav id="tabs" role="tablist" aria-label="Fuentes"></nav>
+  </div>
+</header>
+<main class="wrap" id="vista"></main>
+<div class="wrap"><footer id="pie"></footer></div>
+<dialog id="ventana" aria-labelledby="vt">
+  <div class="dlg-head"><div><h3 id="vt"></h3><p class="nota" id="vn"></p></div>
+    <button class="ghost" id="cerrar" aria-label="Cerrar">Cerrar</button></div>
+  <div class="dlg-body" id="vc"></div>
+</dialog>
+<script>
+const DATA = {"generado": "2026-10-29", "fuentes": [{"id": "ti", "pestana": "Talent Insights", "titulo": "Antropología en Talent Insights: Uniandes frente a pares y al mercado general", "fuente": "Fuente: LinkedIn", "hallazgos": ["Uniandes tiene 1540 perfiles de antropología en Colombia (cualquier formación en Uniandes, toda la historia), 15.7% del mercado general (9810).", "Pares locales en Colombia: U. Nacional 1924, Javeriana 982, Externado 658, Rosario 518.", "Principales empleadores de Uniandes en Colombia: Universidad de los Andes - Colombia (85), Instituto Colombiano de Antropología e Historia (ICANH) (18), Pontificia Universidad Javeriana (17), Universidad Externado de Colombia (15).", "Los pares internacionales (LSE, Oxford, Cambridge, Barcelona, UNAM) se miden en su región natural."], "advertencias": ["Alcance del filtro de institución: incluye a cualquier persona con una formación registrada en esa institución (pregrado, posgrado, educación continua o intercambio) y un perfil relacionado con antropología. No es solo pregrado ni solo egresados, así que las cifras superan a los egresados de pregrado: para ellos la fuente precisa es la base de egresados (Recruiter).", "No hay periodo: Talent Insights cuenta toda la historia de los perfiles, no solo los egresados de 2021 a 2025.", "Es información agregada: los cargos y aptitudes son conteos de lo que los perfiles declaran (una persona cuenta en cada cargo o aptitud que registra), no se puede cruzar persona a persona.", "Son conteos de perfiles con 'Antropología' (palabra clave bilingüe), no titulados verificados.", "Cada institución es una búsqueda aparte: no sumes entre instituciones, un perfil puede estar en varias.", "'Anuncios de empleo' cuenta todo lo que publica la empresa, no solo vacantes para antropólogos.", "Las escalas del mercado general y de Uniandes difieren mucho: compara proporciones, no tamaños."], "graficas": [{"titulo": "Profesionales de antropología por institución y ubicación", "cab": ["Institución", "Colombia", "América Latina", "Estados Unidos", "Europa"], "filas": [["Uniandes", 1540, 113, 195, 350], ["U. Barcelona", 94, 344, 253, 3425], ["Cambridge", 20, 211, 1185, 4673], ["LSE", 42, 167, 1121, 4105], ["Oxford", 17, 103, 1789, 3771], ["UNAM", 78, 3094, 184, 349], ["Externado", 658, 19, 22, 60], ["Javeriana", 982, 108, 59, 192], ["U. Nacional", 1924, 125, 77, 228], ["Rosario", 518, 41, 10, 92]], "nota": "- Talent Insights muestra un top 100 por lista; lo que queda fuera aparece como 0.", "tema": "Panorama: cuántos son y dónde están"}, {"titulo": "Mercado general: profesionales con 'Antropología' en su perfil", "cab": ["Ubicación", "Profesionales"], "filas": [["Colombia", 9810], ["América Latina", 62792], ["Estados Unidos", 455316], ["Europa", 203182]], "nota": "Sin filtro de institución. Es el universo de comparación; Uniandes es una fracción.", "tema": "Panorama: cuántos son y dónde están"}, {"titulo": "Uniandes como % del mercado general de antropología", "cab": ["Ubicación", "% del mercado"], "filas": [["Colombia", 15.7], ["América Latina", 0.18], ["Estados Unidos", 0.04], ["Europa", 0.17]], "nota": "", "tema": "Panorama: cuántos son y dónde están"}, {"titulo": "Dónde viven los profesionales de cada institución (% por ubicación)", "cab": ["Institución", "Colombia", "América Latina", "Estados Unidos", "Europa"], "filas": [["Uniandes", 70.1, 5.1, 8.9, 15.9], ["U. Barcelona", 2.3, 8.4, 6.1, 83.2], ["Cambridge", 0.3, 3.5, 19.5, 76.7], ["LSE", 0.8, 3.1, 20.6, 75.5], ["Oxford", 0.3, 1.8, 31.5, 66.4], ["UNAM", 2.1, 83.5, 5, 9.4], ["Externado", 86.7, 2.5, 2.9, 7.9], ["Javeriana", 73.2, 8.1, 4.4, 14.3], ["U. Nacional", 81.7, 5.3, 3.3, 9.7], ["Rosario", 78.4, 6.2, 1.5, 13.9]], "nota": "Reparto de cada institución entre las 4 ubicaciones (suma 100%).", "tema": "Panorama: cuántos son y dónde están"}, {"titulo": "Principales empleadores de egresados Uniandes en Colombia (y pares locales)", "cab": ["Empresa", "Uniandes", "U. Nacional", "Javeriana", "Externado", "Rosario"], "filas": [["Universidad de los Andes - Colombia", 85, 19, 16, 2, 8], ["Instituto Colombiano de Antropología e Historia (ICANH)", 18, 40, 11, 15, 6], ["Pontificia Universidad Javeriana", 17, 28, 41, 4, 4], ["Universidad Externado de Colombia", 15, 11, 7, 21, 2], ["Universidad del Rosario", 14, 12, 4, 5, 27], ["Universidad Nacional de Colombia", 10, 85, 10, 2, 2], ["Universidad El Bosque", 8, 7, 3, 0, 0], ["Unidad de Búsqueda de Personas dadas por Desaparecidas (UBPD)", 8, 25, 0, 13, 4], ["Defensoría del Pueblo Colombia", 8, 5, 4, 0, 0], ["Banco de la República - Colombia", 7, 4, 2, 2, 2], ["Universidad de La Sabana", 6, 0, 4, 0, 2], ["Universidad del Norte", 6, 3, 0, 0, 0]], "nota": "Profesionales trabajando hoy en cada empresa (sin independientes/freelance; ICANH y Universidad Nacional se agrupan). En pares, 0 = no aparece en su top 100.", "tema": "Dónde trabajan"}, {"titulo": "Empleadores de Uniandes: anuncios de empleo activos hoy", "cab": ["Empresa", "Anuncios de empleo"], "filas": [["Universidad de los Andes - Colombia", 14], ["Banco de la República - Colombia", 8], ["Instituto Colombiano de Antropología e Historia (ICANH)", 0], ["Pontificia Universidad Javeriana", 0], ["Universidad Externado de Colombia", 0], ["Universidad del Rosario", 0], ["Universidad Nacional de Colombia", 0], ["Universidad El Bosque", 0], ["Unidad de Búsqueda de Personas dadas por Desaparecidas (UBPD)", 0], ["Defensoría del Pueblo Colombia", 0], ["Universidad de La Sabana", 0], ["Universidad del Norte", 0]], "nota": "Anuncios que la empresa tiene abiertos (todos los perfiles), no solo para antropología.", "tema": "Dónde trabajan"}, {"titulo": "Sectores donde trabajan los egresados de Uniandes (Colombia)", "cab": ["Sector", "Profesionales"], "filas": [["Enseñanza superior", 287], ["Administración pública", 127], ["Organizaciones sin ánimo de lucro", 88], ["Servicios de investigación", 79], ["Consultoría y servicios a empresas", 66], ["Organizaciones comunitarias y sociales", 50], ["Servicios medioambientales", 42], ["Educación primaria y secundaria", 36], ["Educación", 34], ["Servicios de publicidad", 28], ["Asuntos exteriores", 26], ["Servicios y consultoría de TI", 23]], "nota": "", "tema": "Dónde trabajan"}, {"titulo": "Cargos más frecuentes: Uniandes vs. mercado general (% de profesionales, Colombia)", "cab": ["Cargo", "Uniandes %", "Mercado general %"], "filas": [["Maestro", 4.4, 4.8], ["Investigador", 3.9, 3.4], ["Gerente", 3.2, 2.2], ["Consultor", 3.1, 1.7], ["Profesor", 3, 2.9], ["Director de proyecto", 2.4, 1.2], ["Profesional", 2.4, 2.7], ["Antropólogo", 2.2, 2.8], ["Fundador", 2, 1.2], ["Cofundador", 1.8, 0.9], ["Asesor", 1.5, 1.2], ["Coordinador", 1.4, 1.5]], "nota": "Porcentaje de perfiles del grupo que registra ese cargo (una persona puede registrar varios, por eso no suma 100%): compara proporciones, no tamaños.", "tema": "Qué hacen y qué saben hacer"}, {"titulo": "Aptitudes más comunes: Uniandes vs. mercado general (% de profesionales)", "cab": ["Aptitud", "Uniandes %", "Mercado general %"], "filas": [["Antropología", 32.8, 30.2], ["Capacidad de análisis", 26.1, 23.7], ["Investigación cualitativa", 23.4, 15.1], ["Gestión de Proyectos", 21.2, 18], ["Etnografía", 20.5, 13.9], ["Recogida de datos", 18.2, 14.3], ["Investigación social", 17.9, 14.8], ["Sociología", 17, 15], ["Antropología cultural", 16.6, 17.1], ["Refuerzo de capacidades", 16.6, 12.2], ["Métodos de investigación", 16.6, 12.8], ["Análisis de datos", 15.6, 14.7], ["Trabajo de grupo", 15.5, 11.4], ["Trabajo de campo", 15.3, 13.9], ["Evaluación de programas", 15.1, 9.8]], "nota": "Porcentaje de perfiles del grupo que declara la aptitud (Colombia); una persona declara varias, por eso no suma 100%.", "tema": "Qué hacen y qué saben hacer"}, {"titulo": "Aptitudes de Uniandes con más anuncios de empleo", "cab": ["Aptitud", "Anuncios de empleo"], "filas": [["Capacidad de análisis", 10688], ["Análisis de datos", 4514], ["Educación", 4262], ["Adobe Photoshop", 3864], ["Investigación y desarrollo (I+D)", 2005], ["Comunicación", 1135], ["Trabajo en equipo", 809], ["Creatividad", 754], ["Redes sociales", 671], ["Espíritu de equipo", 667], ["Gestión documental", 660], ["Concienciación medioambiental", 622], ["Liderazgo", 544], ["Política", 522], ["Gobierno", 436]], "nota": "Anuncios de empleo en Colombia que piden la aptitud: la señal de demanda más directa de este libro.", "tema": "Qué hacen y qué saben hacer"}, {"titulo": "Otras disciplinas que estudiaron (Colombia, Uniandes)", "cab": ["Disciplina", "Profesionales"], "filas": [["Antropología", 1066], ["Ciencias sociales", 217], ["Ciencias políticas y gobierno", 130], ["Derecho", 119], ["Formación de profesorado en Estudios Sociales", 114], ["Historia", 99], ["Educación", 94], ["Psicología", 92], ["Administración y gestión de empresas, general", 86], ["Economía", 77], ["Arqueología", 55], ["Antropología cultural", 54]], "nota": "", "tema": "Cómo se formaron"}]}, {"id": "egr", "pestana": "Egresados (Recruiter)", "titulo": "Egresados de Antropología de Uniandes: perfil laboral y geográfico", "fuente": "Fuente: LinkedIn", "hallazgos": ["158 personas en la base; 158 de 190 egresados del listado oficial tienen perfil asignado.", "País más frecuente: Colombia.", "Empleadores actuales más frecuentes: Universidad de los Andes (11); Gimnasio Vermont (3); TrophicaLab (2); Dialectica (2).", "Situación laboral según el perfil: 106 de 158 (67%) tienen un cargo abierto; 43 no tienen cargo abierto y 9 no registran experiencia.", "38 personas (24%) muestran un posgrado terminado; 24 de ellas en instituciones distintas a Uniandes."], "advertencias": ["La experiencia visible llega a unas 3 entradas por perfil: sirve para 'dónde trabaja hoy', no para trayectorias.", "La situación laboral se deduce de los cargos abiertos del perfil: sin cargo abierto no es lo mismo que desempleado.", "El pregrado de Uniandes de algunas personas aparecía como 'otro' en LinkedIn; se tomó del listado oficial.", "Es una muestra de Recruiter, no el universo completo de egresados."], "graficas": [{"titulo": "Estado académico en Uniandes (personas de la base)", "cab": ["Estado", "Personas"], "filas": [["egresado", 158]], "nota": "Todos están en el listado oficial de egresados.", "tema": "Quiénes son los egresados"}, {"titulo": "Egresados oficiales por año de grado (listado de la Universidad)", "cab": ["Año", "Egresados"], "filas": [[2021, 28], [2022, 37], [2023, 48], [2024, 42], [2025, 35]], "nota": "", "tema": "Quiénes son los egresados"}, {"titulo": "Cobertura del listado oficial en LinkedIn", "cab": ["Grupo", "Egresados"], "filas": [["Con perfil identificado en la base", 158], ["Sin perfil asignado aún", 32]], "nota": "Cruce entre el listado oficial de egresados y los perfiles encontrados en Recruiter.", "tema": "Quiénes son los egresados"}, {"titulo": "País de residencia (top 10)", "cab": ["País", "Personas"], "filas": [["Colombia", 140], ["Alemania", 4], ["Reino Unido", 3], ["España", 2], ["Estados Unidos", 2], ["Países Bajos", 2], ["Suecia", 1], ["Argentina", 1], ["Francia", 1], ["Irlanda", 1]], "nota": "", "tema": "Dónde viven"}, {"titulo": "Ciudad de residencia (top 12)", "cab": ["Ciudad", "Personas"], "filas": [["Bogotá", 133], ["Sin ciudad (solo país)", 9], ["Medellín", 2], ["Barcelona", 2], ["Londres", 2], ["Hamburgo", 1], ["Uppsala", 1], ["Durham", 1], ["Ámsterdam", 1], ["Bobigny", 1], ["Leipzig", 1], ["Ratisbona", 1]], "nota": "'Sin ciudad (solo país)': LinkedIn solo informó el país.", "tema": "Dónde viven"}, {"titulo": "Dónde trabajan hoy (empleadores con más egresados, top 15)", "cab": ["Empleador", "Personas"], "filas": [["Universidad de los Andes", 11], ["Gimnasio Vermont", 3], ["TrophicaLab", 2], ["Dialectica", 2], ["Amazon Conservation Team", 2], ["Publicis Global Delivery (PGD)", 2], ["Urban Biodiversity Hub", 1], ["Junca Jewelry", 1], ["Federación Colombiana de Tenis", 1], ["Diorama", 1], ["BUNT", 1], ["International Federation of Red Cross and Red Crescent Societies - IFRC", 1], ["Mental Health IPS.", 1], ["Macondo Magic Softwares", 1], ["Corte Constitucional de Colombia", 1]], "nota": "Cargos abiertos de 106 personas; se excluye independiente/freelance. Todas las unidades de la Universidad (facultades, centros) cuentan como Universidad de los Andes; cada persona cuenta una vez por empleador.", "tema": "Dónde trabajan hoy"}, {"titulo": "Cargos actuales por grupo de cargo", "cab": ["Grupo de cargo", "Personas"], "filas": [["Investigación y antropología", 20], ["Gestión de proyectos", 14], ["Gestión social, comunitaria y sostenibilidad", 14], ["Docencia", 12], ["Comunicación y contenidos", 11], ["Administración, operaciones y coordinación", 10], ["Comercial y servicio al cliente", 9], ["Consultoría y análisis", 8], ["Diseño, tecnología y datos", 7], ["Contratista o independiente", 7], ["Emprendimiento y dirección", 7], ["Cultura, arte y patrimonio", 5], ["Practicante o pasante", 5], ["Monitoría y asistencia académica", 5], ["Jurídico", 3], ["Salud y psicología", 2], ["Representación y otros", 2], ["Voluntariado", 2]], "nota": "Los cargos se agrupan el listado oficial (editable a mano). Una persona cuenta una vez por grupo.", "tema": "Dónde trabajan hoy"}, {"titulo": "Situación laboral según el perfil de LinkedIn", "cab": ["Situación", "Personas"], "filas": [["Con otro cargo abierto (empleo, contrato, emprendimiento)", 100], ["Solo práctica, monitoría o voluntariado abierto", 6], ["Sin cargo abierto, con experiencia previa", 43], ["Sin experiencia registrada en el perfil", 9]], "nota": "Se deduce de si el perfil tiene un cargo abierto. 'Sin cargo abierto' NO significa desempleado: el perfil puede no estar actualizado. El indicador 'Open to work' no se capturó.", "tema": "Dónde trabajan hoy"}, {"titulo": "Cargo actual relacionado con antropología", "cab": ["Situación", "Personas"], "filas": [["Sí: el cargo nombra antropología, etnografía o arqueología", 4], ["Sí: cargo de investigación", 16], ["Sí: cargo social, comunitario o cultural", 15], ["No: cargo abierto sin relación con antropología", 71], ["Sin cargo abierto", 43], ["Sin experiencia registrada", 9]], "nota": "Regla por palabra clave sobre el título del cargo abierto; 'cargo de investigación' no distingue el tema investigado.", "tema": "Dónde trabajan hoy"}, {"titulo": "Jerarquía del cargo actual", "cab": ["Nivel", "Personas"], "filas": [["profesional", 67], ["sin_clasificar", 32], ["asistente", 17], ["coordinador", 12], ["director", 12], ["socio", 7], ["practicante", 6], ["c_level", 1]], "nota": "Jerarquía derivada del texto del cargo (practicante, asistente, profesional, coordinador, director...).", "tema": "Dónde trabajan hoy"}, {"titulo": "Área funcional del cargo actual", "cab": ["Área", "Personas"], "filas": [["sin_clasificar", 65], ["Docencia e Investigación", 35], ["Consultoría y Estrategia", 10], ["Marketing y Ventas", 8], ["Gestión de Proyectos", 7], ["Ingeniería y Arquitectura", 6], ["Diseño y Creativo", 6], ["Salud", 4], ["Recursos Humanos", 3], ["Legal", 3], ["Operaciones y Cadena", 3], ["Ambiente y Sostenibilidad", 2], ["Tecnología y Datos", 1], ["Gestión Pública y Política", 1]], "nota": "Función derivada por reglas de palabra clave; 'sin_clasificar' son cargos que no declaran función.", "tema": "Dónde trabajan hoy"}, {"titulo": "Cargos de toda la trayectoria visible, por grupo de cargo", "cab": ["Grupo de cargo", "Personas"], "filas": [["Practicante o pasante", 88], ["Investigación y antropología", 83], ["Monitoría y asistencia académica", 70], ["Gestión de proyectos", 38], ["Docencia", 31], ["Consultoría y análisis", 30], ["Gestión social, comunitaria y sostenibilidad", 30], ["Administración, operaciones y coordinación", 29], ["Comunicación y contenidos", 27], ["Comercial y servicio al cliente", 21], ["Representación y otros", 16], ["Diseño, tecnología y datos", 15], ["Contratista o independiente", 13], ["Voluntariado", 12], ["Cultura, arte y patrimonio", 11], ["Emprendimiento y dirección", 8], ["Salud y psicología", 7], ["Jurídico", 5]], "nota": "Incluye cargos pasados y actuales; una persona cuenta una vez por grupo.", "tema": "Trayectoria laboral"}, {"titulo": "Experiencias laborales según su relación con antropología", "cab": ["Relación", "Experiencias"], "filas": [["Directa: el cargo nombra antropología, etnografía o arqueología", 39], ["Afín: cargo de investigación", 156], ["Afín: cargo social, comunitario o cultural", 84], ["No corresponde", 611]], "nota": "890 experiencias (pasadas y actuales). Regla por palabra clave sobre el título del cargo.", "tema": "Trayectoria laboral"}, {"titulo": "Experiencias que corresponden a antropología, por año de inicio", "cab": ["Año de inicio", "Corresponden", "No corresponden"], "filas": [[2015, 0, 2], [2017, 2, 3], [2018, 4, 15], [2019, 9, 28], [2020, 17, 44], [2021, 40, 73], [2022, 51, 95], [2023, 49, 116], [2024, 63, 103], [2025, 28, 90], [2026, 16, 39]], "nota": "3 experiencias sin año de inicio no se muestran.", "tema": "Trayectoria laboral"}, {"titulo": "Experiencias que corresponden a antropología, por tipo de empleador", "cab": ["Tipo de empleador", "Corresponden", "No corresponden"], "filas": [["Empresa u otra organización", 88, 324], ["Educación (universidades y colegios)", 108, 182], ["ONG, fundaciones y organismos internacionales", 23, 67], ["Entidad pública", 44, 34], ["Museos y entidades culturales", 15, 1], ["Cuenta propia", 1, 3]], "nota": "El tipo de empleador sale del nombre: es aproximado.", "tema": "Trayectoria laboral"}, {"titulo": "Año en que terminó su último cargo (personas sin cargo abierto)", "cab": ["Año de fin", "Personas"], "filas": [["2021", 1], ["2022", 1], ["2023", 4], ["2024", 11], ["2025", 14], ["2026", 12]], "nota": "Solo personas con experiencia previa y sin cargo abierto en el perfil.", "tema": "Trayectoria laboral"}, {"titulo": "Señal «buscando empleo» en Recruiter (personas)", "cab": ["Señal", "Personas"], "filas": [["Sí", 96], ["No", 62]], "nota": "Foto de Recruiter del 2026-10-27 al 2026-10-28. Es una señal que la persona activa en LinkedIn (muchas veces solo visible para reclutadores) y puede estar desactualizada: NO equivale a estar desempleada.", "tema": "Búsqueda de empleo"}, {"titulo": "Señal «buscando empleo» según el cargo abierto del perfil", "cab": ["Cargo abierto", "Con la señal", "Sin la señal"], "filas": [["Cargo abierto relacionado con antropología", 17, 18], ["Cargo abierto sin relación", 41, 30], ["Sin cargo abierto en el perfil", 33, 10], ["Sin experiencia registrada", 5, 4]], "nota": "Cerca de 6 de cada 10 personas con la señal tienen un cargo abierto en el perfil: la señal no indica desempleo.", "tema": "Búsqueda de empleo"}, {"titulo": "Señal «buscando empleo»: Colombia y exterior", "cab": ["Residencia", "Con la señal", "Sin la señal"], "filas": [["Colombia", 87, 53], ["Exterior", 9, 9]], "nota": "Foto de Recruiter del 2026-10-27 al 2026-10-28. Es una señal que la persona activa en LinkedIn (muchas veces solo visible para reclutadores) y puede estar desactualizada: NO equivale a estar desempleada.", "tema": "Búsqueda de empleo"}, {"titulo": "Egresados con la señal Open to Work", "cab": ["Señal", "Egresados"], "filas": [["Con la señal Open to Work", 96], ["Sin la señal", 62]], "nota": "Solo egresados del listado oficial encontrados en Recruiter.", "tema": "Búsqueda de empleo"}, {"titulo": "Señal Open to Work y empleo actual", "cab": ["Grupo", "Con empleo actual registrado", "Sin empleo actual registrado"], "filas": [["Con la señal", 58, 38], ["Sin la señal", 48, 14]], "nota": "", "tema": "Búsqueda de empleo"}, {"titulo": "Instituciones de posgrado de los egresados (top 12)", "cab": ["Institución", "Titulaciones"], "filas": [["Universitat Autònoma de Barcelona", 2], ["The London School of Economics and Political Science (LSE)", 2], ["Consejo Latinoamericano de Ciencias Sociales", 1], ["Universidad Andina Simón Bolívar Ecuador", 1], ["Pontificia Universidad Javeriana Cali", 1], ["CLACSO", 1], ["Universidad Europea", 1], ["Universidad Libre ®", 1], ["Universidad de Antioquia", 1], ["Uppsala University", 1], ["Universidad de Deusto", 1], ["Universidad de Buenos Aires", 1]], "nota": "24 personas (15%) tienen al menos un posgrado terminado visible.", "tema": "Formación y posgrados"}, {"titulo": "Tipo de formación registrada (todas las titulaciones visibles)", "cab": ["Nivel", "Titulaciones"], "filas": [["pregrado", 213], ["otro", 158], ["posgrado", 65], ["educacion_continua", 17]], "nota": "158 de 158 personas con pregrado de Uniandes; 39 se reclasificaron de 'otro' a pregrado con el listado oficial.", "tema": "Formación y posgrados"}, {"titulo": "Nivel de los posgrados terminados (todas las instituciones)", "cab": ["Tipo de posgrado", "Titulaciones"], "filas": [["maestria", 35], ["especializacion", 8], ["sin_especificar", 1]], "nota": "'sin_especificar': el perfil dice solo 'posgrado' sin indicar maestría, especialización o doctorado.", "tema": "Formación y posgrados"}, {"titulo": "Otra formación visible de los egresados (personas)", "cab": ["Grupo", "Personas"], "filas": [["Solo antropología (sin otra formación visible)", 73], ["Otro pregrado, opción o minor, sin posgrado", 47], ["Posgrado, sin otro pregrado ni opción", 21], ["Otro pregrado u opción y además posgrado", 17]], "nota": "Cada persona cuenta una vez. Solo posgrados terminados. 'Solo antropología' puede incluir formación que el perfil no muestra.", "tema": "Formación y posgrados"}, {"titulo": "Otros pregrados que han hecho, por área (personas)", "cab": ["Área", "Personas"], "filas": [["Ciencia política, políticas públicas y gobierno", 6], ["Lenguas, literatura y filosofía", 5], ["Economía y negocios", 4], ["Derecho y derechos humanos", 3], ["Arte, cultura y patrimonio", 3], ["Ciencias naturales y ambientales", 2], ["Psicología", 2], ["Historia", 2], ["Arquitectura y diseño", 2], ["Salud y salud pública", 1], ["Sociología, estudios culturales y de género", 1], ["Datos, tecnología e ingeniería", 1]], "nota": "32 personas con un segundo pregrado (doble programa). El área sale del título; incluye títulos sin nivel declarado que nombran una profesión.", "tema": "Formación y posgrados"}, {"titulo": "Opciones académicas, minors y estudios complementarios, por área (personas)", "cab": ["Área", "Personas"], "filas": [["Arte, cultura y patrimonio", 9], ["Lenguas, literatura y filosofía", 5], ["Sociología, estudios culturales y de género", 4], ["Comunicación y periodismo", 3], ["Psicología", 2], ["Desarrollo, migración y acción humanitaria", 1], ["Historia", 1], ["Educación", 1], ["Ciencias naturales y ambientales", 1], ["Derecho y derechos humanos", 1], ["Arquitectura y diseño", 1], ["Sin área visible en el perfil", 16]], "nota": "39 personas. Programas paralelos dentro de Uniandes y cursos complementarios; 'sin área' son títulos como 'Minor' u 'Opción académica' sin decir cuál.", "tema": "Formación y posgrados"}, {"titulo": "Posgrados terminados por área de estudio (personas)", "cab": ["Área", "Personas"], "filas": [["Ciencia política, políticas públicas y gobierno", 5], ["Derecho y derechos humanos", 3], ["Antropología", 3], ["Economía y negocios", 2], ["Desarrollo, migración y acción humanitaria", 2], ["Arte, cultura y patrimonio", 2], ["Sociología, estudios culturales y de género", 1], ["Psicología", 1], ["Datos, tecnología e ingeniería", 1], ["Historia", 1], ["Sin área visible en el perfil", 20]], "nota": "38 personas. El perfil suele decir solo 'Maestría' o 'Master's degree': esas quedan en 'sin área visible'. El área sale del título y, en posgrado, también de la institución.", "tema": "Formación y posgrados"}, {"titulo": "Posgrados terminados por área y nivel (titulaciones)", "cab": ["Área", "Maestría", "Especialización", "Doctorado", "Sin especificar"], "filas": [["Ciencia política, políticas públicas y gobierno", 3, 2, 0, 0], ["Derecho y derechos humanos", 1, 3, 0, 0], ["Antropología", 3, 0, 0, 0], ["Desarrollo, migración y acción humanitaria", 3, 0, 0, 0], ["Arte, cultura y patrimonio", 2, 0, 0, 0], ["Economía y negocios", 2, 0, 0, 0], ["Sociología, estudios culturales y de género", 1, 0, 0, 0], ["Datos, tecnología e ingeniería", 0, 1, 0, 0], ["Psicología", 1, 0, 0, 0], ["Historia", 1, 0, 0, 0], ["Sin área visible en el perfil", 18, 2, 0, 1]], "nota": "Una fila por titulación (una persona puede tener más de un posgrado).", "tema": "Formación y posgrados"}]}, {"id": "jobs", "pestana": "Vacantes", "titulo": "Vacantes de empleo para antropólogos en Colombia", "fuente": "Fuente: LinkedIn Jobs y bolsas de empleo colombianas", "hallazgos": ["76 ofertas únicas; solo 19 coinciden directamente con la palabra clave.", "73 son vacantes distintas y 3 publicaciones repiten una vacante ya contada (misma empresa, título y texto en otra ciudad).", "Modalidad más frecuente: Presencial.", "Ciudad con más ofertas: Bogotá.", "Competencias transversales más citadas: Excel / ofimática (33); Inglés / bilingüe (32); Redacción de informes (24).", "Competencias de la disciplina más citadas: Gestión social / comunitaria (31); Ciencias sociales / investigación social (28); Encuestas / levantamiento de información (17).", "Solo 12 ofertas declaran sueldo (16%)."], "advertencias": ["Es una foto del día de la descarga, no una serie histórica.", "LinkedIn Jobs no entrega aptitudes por oferta: las competencias salen de leer el texto y se clasifican como transversales o de la disciplina por criterio del equipo.", "Las ofertas 'relacionadas' amplían el panorama pero no son demanda explícita de antropología.", "Los sueldos son los que el empleador escribió; hay pocos y no están normalizados."], "graficas": [{"titulo": "LinkedIn Jobs: Ofertas: coincidencia con la palabra clave", "cab": ["Tipo", "Ofertas"], "filas": [["Coincide con la palabra clave", 19], ["Relacionadas (sugeridas por LinkedIn)", 57]], "nota": "Las 'relacionadas' no mencionan antropología en la búsqueda directa: úsalas como contexto, no como demanda.", "tema": "Panorama de la oferta"}, {"titulo": "LinkedIn Jobs: Antigüedad de la publicación", "cab": ["Antigüedad", "Ofertas"], "filas": [["Hasta 1 semana", 39], ["1 a 4 semanas", 22], ["1 a 3 meses", 12], ["Más de 3 meses", 3]], "nota": "", "tema": "Panorama de la oferta"}, {"titulo": "LinkedIn Jobs: Personas interesadas por oferta (clics en Solicitar)", "cab": ["Tramo", "Ofertas"], "filas": [["0 a 20", 5], ["21 a 50", 4], ["51 a 99", 7], ["100 o más (tope de LinkedIn)", 45], ["Sin dato", 15]], "nota": "LinkedIn solo informa 'más de 100': las ofertas más populares quedan truncadas en 100.", "tema": "Panorama de la oferta"}, {"titulo": "Otras bolsas: Vacantes por fuente", "cab": ["Categoría", "Vacantes"], "filas": [["Computrabajo", 46], ["Servicio Público de Empleo", 28], ["elempleo", 22], ["Indeed", 4], ["Magneto", 3]], "nota": "Cada vacante se cuenta una vez.", "tema": "Panorama de la oferta"}, {"titulo": "LinkedIn Jobs: Años de experiencia que piden las ofertas", "cab": ["Años", "Ofertas"], "filas": [["Sin mención", 37], ["1 año(s)", 4], ["2 año(s)", 16], ["3 año(s)", 8], ["5 año(s)", 5], ["6 año(s)", 2], ["10 año(s)", 1], ["20 año(s)", 1], ["tres año(s)", 1], ["dos año(s)", 1]], "nota": "Se lee del texto de los requisitos; las ofertas que no lo mencionan quedan en 'Sin mención'.", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "LinkedIn Jobs: Competencias transversales más mencionadas (sirven a cualquier profesional)", "cab": ["Competencia", "Ofertas que la mencionan"], "filas": [["Excel / ofimática", 33], ["Inglés / bilingüe", 32], ["Redacción de informes", 24], ["Comunicación oral y escrita", 19], ["Trabajo en equipo", 15], ["Liderazgo", 13], ["Gestión de proyectos", 12], ["Pensamiento crítico / analítico", 11], ["Word / PowerPoint / Office", 10], ["Análisis de datos (SPSS, R, Python)", 9], ["Monitoreo y evaluación (M&E)", 9], ["Investigación de mercados / UX", 9], ["Docencia / enseñanza", 9], ["Visualización de datos (Power BI, Tableau)", 7], ["SIG / mapas (ArcGIS, QGIS)", 3], ["Otros idiomas (francés, portugués, alemán)", 2]], "nota": "Conteo por reglas de palabra clave sobre 76 ofertas; una oferta puede sumar en varias competencias.", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "LinkedIn Jobs: Competencias propias de la disciplina (antropología y ciencias sociales)", "cab": ["Competencia", "Ofertas que la mencionan"], "filas": [["Gestión social / comunitaria", 31], ["Ciencias sociales / investigación social", 28], ["Encuestas / levantamiento de información", 17], ["Enfoque de género y diferencial", 11], ["Enfoque territorial", 10], ["Investigación cualitativa", 10], ["Derechos humanos / protección", 10], ["Etnografía / trabajo de campo", 9], ["Metodologías participativas / talleres", 7], ["Víctimas / paz / reparación", 6], ["Patrimonio / arqueología", 5], ["Consulta previa / enfoque étnico", 5], ["Sistematización de información", 4], ["Políticas públicas", 2]], "nota": "Conteo por reglas de palabra clave sobre 76 ofertas; una oferta puede sumar en varias competencias.", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Vacantes por área de desempeño", "cab": ["Categoría", "Vacantes"], "filas": [["Gestión social en infraestructura", 29], ["Arqueología y patrimonio", 16], ["Programas sociales y humanitarios", 15], ["Docencia universitaria", 12], ["Relacionamiento comunitario y sostenibilidad", 9], ["Docencia escolar", 7], ["Gestión organizacional y administrativa", 7], ["Investigación y consultoría social", 5], ["Prácticas profesionales", 3]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Perfil profesional solicitado", "cab": ["Categoría", "Vacantes"], "filas": [["Antropología y 3 o más disciplinas", 81], ["Exclusivo: antropología o arqueología", 17], ["Antropología y 1 a 2 disciplinas más", 5]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Nivel de estudios mínimo exigido", "cab": ["Categoría", "Vacantes"], "filas": [["Profesional", 65], ["Especialización", 15], ["Maestría", 9], ["Estudiante universitario", 7], ["Técnico o tecnólogo", 6], ["Doctorado", 1]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Experiencia mínima exigida", "cab": ["Categoría", "Vacantes"], "filas": [["Sin experiencia", 6], ["Menos de 2 años", 21], ["2 a 3 años", 40], ["4 a 5 años", 14], ["Más de 5 años", 10], ["No especifica", 12]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Otras disciplinas aceptadas en las mismas vacantes (top 12)", "cab": ["Categoría", "Vacantes"], "filas": [["Sociología", 73], ["Trabajo Social", 66], ["Psicología", 52], ["Ciencia Política", 27], ["Comunicación Social", 25], ["Licenciaturas y pedagogía", 25], ["Ciencias sociales (genérico)", 16], ["Economía", 16], ["Historia", 16], ["Arqueología", 15], ["Administración y afines", 14], ["Humanidades y artes", 14]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Aptitudes más solicitadas (top 15)", "cab": ["Categoría", "Vacantes"], "filas": [["Trabajo y relacionamiento con comunidades", 32], ["Elaboración de informes", 19], ["Pedagogía y facilitación de talleres", 19], ["Experiencia docente", 16], ["Ofimática (Word, Excel, PowerPoint)", 14], ["Planes de gestión social y manejo ambiental", 14], ["Gestión de proyectos", 13], ["Disponibilidad para viajar y trabajo de campo", 12], ["Resolución de conflictos y negociación", 12], ["Investigación y producción académica", 11], ["Tarjeta o matrícula profesional", 11], ["–", 11], ["Diagnóstico y caracterización poblacional", 10], ["Normativa arqueológica (ICANH, Decreto 138/2019, RNA)", 10], ["Comunidades étnicas y consulta previa", 9]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "Otras bolsas: Labores más frecuentes (top 12)", "cab": ["Categoría", "Vacantes"], "filas": [["Relacionamiento y acompañamiento comunitario", 29], ["Ejecución de planes de gestión social", 26], ["Elaboración de informes y registros", 26], ["Coordinación de equipos y proyectos", 16], ["Docencia", 16], ["Monitoreo, prospección y rescate arqueológico", 16], ["Talleres, capacitación y pedagogía", 15], ["Investigación", 12], ["Diagnóstico y caracterización social", 10], ["Gestión administrativa y de datos", 10], ["Atención a usuarios y PQRS", 8], ["Manejo de conflictos", 8]], "nota": "", "tema": "Qué piden: perfil y requisitos"}, {"titulo": "LinkedIn Jobs: Modalidad de trabajo", "cab": ["Modalidad", "Ofertas"], "filas": [["Presencial", 52], ["En remoto", 17], ["Híbrido", 7]], "nota": "", "tema": "Condiciones laborales"}, {"titulo": "LinkedIn Jobs: Tipo de jornada", "cab": ["Jornada", "Ofertas"], "filas": [["Jornada completa", 67], ["Sin dato", 8], ["Prácticas", 1]], "nota": "", "tema": "Condiciones laborales"}, {"titulo": "LinkedIn Jobs: Ofertas que declaran sueldo (texto del empleador y lectura numérica)", "cab": ["Título", "Empresa", "Ubicación", "Sueldo declarado", "Mínimo", "Máximo", "Unidad", "Lectura"], "filas": [["Coordinador(a) de Interpretación", "Fundación Zoológica de Cali", "Cali, Valle del Cauca, Colombia", "$3.400.000 mensuales.", 3400000, 3400000, "COP mensual", "literal"], ["Conservation and Local Communities Intern", "National Audubon Society", "Colombia", "COP 2,000.000 monthly", 2000000, 2000000, "COP mensual", "literal"], ["Oficial de Monitoreo y Evaluación Ábrego Norte de Santander", "The HALO Trust", "Ocaña, Norte de Santander, Colombia", "$3.400.000", 3400000, 3400000, "COP mensual", "interpretado: sin unidad, se asume mensual"], ["Oficial de Monitoreo y Evaluación Ábrego Norte de Santander", "The HALO Trust", "San Jose de Cucuta, Norte de Santander, Colombia", "$3.400.000", 3400000, 3400000, "COP mensual", "interpretado: sin unidad, se asume mensual"], ["AI Conversation Quality Analyst | $24/hr Remote", "Crossing Hurdles", "Colombia", "$24/hr Remote", 24, 24, "USD por hora", "interpretado: se asume dólares"], ["Gestor(a) social de campo", "Metro Quadrantte Construction", "Villavicencio, Meta, Colombia", "$3.000.000", 3000000, 3000000, "COP mensual", "interpretado: sin unidad, se asume mensual"], ["Oficial de Monitoreo y Evaluación Ábrego Norte de Santander", "The HALO Trust", "Ábrego, Norte de Santander, Colombia", "$3.400.000", 3400000, 3400000, "COP mensual", "interpretado: sin unidad, se asume mensual"], ["Gestor Social Proyectos Visibles Dibulla", "Profamilia Colombia", "Dibulla, La Guajira, Colombia", "$3.212.000 con todo lo de ley", 3212000, 3212000, "COP mensual", "interpretado: sin unidad, se asume mensual"], ["Profesor(a) Ciencias Sociales Bilingüe", "JM Web Tech", "Bogotá, Distrito Capital, Colombia", "$4.816.600 + prestaciones de ley + Ajuste salarial", 4816600, 4816600, "COP mensual", "interpretado: sin unidad; excluye prestaciones y ajuste"], ["Referente Gestión Territorial Bogotá", "Profamilia Colombia", "Bogotá, Distrito Capital, Colombia", "$3'7M + Auxilio de movilización + Prestaci", 3700000, 3700000, "COP mensual", "interpretado: \"3'7M\" se lee como 3,7 millones; excluye auxilios y prestaciones"], ["Docente Bilingüe Francés de Ciencias Sociales e Historia", "Colegio Cambridge International Education", "La Calera, Cundinamarca, Colombia", "$7.000.000 mensuales", 7000000, 7000000, "COP mensual", "literal"], ["Analista de Experiencia del Usuario (UX) y Comportamiento", "IMEVI SAS", "Bogotá, Distrito Capital, Colombia", "$4´1000.000 y $4´500.000.", 4100000, 4500000, "COP mensual", "interpretado: '4´1000.000' se lee como 4,1 millones (rango 4,1 a 4,5 millones)"]], "nota": "", "tema": "Condiciones laborales"}, {"titulo": "Otras bolsas: Modalidad de trabajo", "cab": ["Categoría", "Vacantes"], "filas": [["No especifica", 56], ["Presencial", 41], ["Remoto", 5], ["Híbrido", 1]], "nota": "", "tema": "Condiciones laborales"}, {"titulo": "Otras bolsas: Tipo de contrato", "cab": ["Categoría", "Vacantes"], "filas": [["Obra o labor", 37], ["Término fijo", 29], ["Prestación de servicios", 16], ["Término indefinido", 16], ["Práctica o aprendizaje", 3], ["No especifica", 1], ["Otro", 1]], "nota": "", "tema": "Condiciones laborales"}, {"titulo": "Otras bolsas: Rango salarial mensual publicado", "cab": ["Categoría", "Vacantes"], "filas": [["No publicado / a convenir", 33], ["$3 M – $4 M", 26], ["$2 M – $3 M", 15], ["$4 M – $6 M", 11], ["Hasta $2 M", 10], ["Más de $6 M", 7], ["Otra moneda", 1]], "nota": "Pesos colombianos al mes.", "tema": "Condiciones laborales"}, {"titulo": "LinkedIn Jobs: Ciudades con más ofertas (top 12)", "cab": ["Ciudad", "Ofertas"], "filas": [["Bogotá", 18], ["Sin ciudad (solo país)", 18], ["Medellín", 6], ["Bucaramanga", 5], ["Cali", 4], ["San José de Cúcuta", 3], ["Segovia", 2], ["Barranquilla", 2], ["Villavicencio", 2], ["Sin ciudad (solo departamento)", 2], ["Buenaventura", 2], ["Santiago de Tolú", 1]], "nota": "", "tema": "Empleadores y territorio"}, {"titulo": "LinkedIn Jobs: Empresas que más publican (top 12)", "cab": ["Empresa", "Ofertas"], "filas": [["Fundación Comuna Project, Centro de Acompañamiento Psicosocial y Laboratorio de Innovación Social", 4], ["Universidad Autónoma de Bucaramanga", 4], ["International Rescue Committee", 4], ["The HALO Trust", 3], ["Aris Mining Colombia", 2], ["SACYR", 2], ["Profamilia Colombia", 2], ["Centro de Empleo y Talento", 2], ["HMV Ingenieros", 2], ["Innova Schools Colombia", 2], ["Comfandi", 2], ["KMA Construcciones", 1]], "nota": "Cuenta publicaciones: una vacante publicada en varias ciudades suma varias veces.", "tema": "Empleadores y territorio"}, {"titulo": "LinkedIn Jobs: Sector de la empresa (top 12)", "cab": ["Sector", "Ofertas"], "filas": [["Organizaciones sin ánimo de lucro", 10], ["Sin dato", 7], ["Enseñanza superior", 6], ["Servicios para el individuo y la familia", 6], ["Construcción", 4], ["Servicios y consultoría de TI", 4], ["Ingeniería civil", 3], ["Minería", 3], ["Asuntos exteriores", 3], ["Dotación y selección de personal", 3], ["Educación primaria y secundaria", 3], ["Administración pública", 2]], "nota": "", "tema": "Empleadores y territorio"}, {"titulo": "Otras bolsas: Sector económico del empleador", "cab": ["Categoría", "Vacantes"], "filas": [["Infraestructura y construcción", 35], ["Educación", 19], ["ONG y organizaciones sociales", 14], ["Consultoría e interventoría", 9], ["No especifica", 9], ["Minero-energético e hidrocarburos", 7], ["Comercio y servicios", 4], ["Salud", 2], ["Agroindustria", 1], ["Sector público", 1], ["Seguros y servicios financieros", 1], ["Servicios públicos", 1]], "nota": "", "tema": "Empleadores y territorio"}, {"titulo": "Otras bolsas: Empresas y entidades con dos o más vacantes", "cab": ["Categoría", "Vacantes"], "filas": [["Servialco", 3], ["Universidad ECCI", 3], ["Corporación Hacia un Valle Solidario", 2], ["Corporación Universitaria Minuto de Dios", 2], ["Cosmo Schools", 2], ["Fundación Andes (Colegio Cumbres)", 2], ["JAHV McGregor", 2], ["Jiro Servicios Temporales", 2], ["Metro Quadrantte Construction", 2]], "nota": "No incluye 55 vacantes de empresa confidencial.", "tema": "Empleadores y territorio"}, {"titulo": "Otras bolsas: Vacantes en Colombia por departamento (top 12)", "cab": ["Categoría", "Vacantes"], "filas": [["Bogotá D.C.", 32], ["Antioquia", 24], ["Valle del Cauca", 10], ["Cobertura nacional", 6], ["Bolívar", 3], ["La Guajira", 3], ["Meta", 3], ["Risaralda", 3], ["Santander", 3], ["Atlántico", 2], ["Cauca", 2], ["Cundinamarca", 2]], "nota": "", "tema": "Empleadores y territorio"}, {"titulo": "Otras bolsas: Vacantes por país", "cab": ["Categoría", "Vacantes"], "filas": [["Colombia", 101], ["Chile", 1], ["El Salvador", 1]], "nota": "", "tema": "Empleadores y territorio"}]}, {"id": "inst", "pestana": "Productos institucionales", "titulo": "Egresados de Antropología: productos institucionales", "fuente": "Fuente: registros institucionales de la Universidad y LinkedIn", "hallazgos": ["De 190 egresados oficiales de Antropología, 111 (58,4 %) tienen prácticas marcadas en el programa.", "De los 190 egresados de Antropología analizados, 107 (56,3 %) registraron en LinkedIn al menos una experiencia laboral coincidente con su año de graduación, excluyendo las experiencias identificadas como prácticas, monitorías y voluntariados.", "Al diferenciar según los registros institucionales de prácticas, el 59,5 % de los egresados con prácticas marcadas en el programa presentó experiencia laboral durante el año de grado, frente al 51,9 % de quienes no tenían prácticas marcadas. Esta diferencia es descriptiva y no permite establecer una relación causal entre la realización de prácticas y la vinculación laboral.", "Créditos promedio: 175.4 aprobados de 179.7 intentados (97,7 %).", "55,8 % de los egresados tardó uno o más semestres de lo previsto."], "advertencias": ["Describe a los 190 egresados del listado oficial con registros institucionales de la Universidad.", "La experiencia laboral del año de grado sale de lo que cada persona publicó en LinkedIn, así que depende de que el perfil esté completo.", "Las diferencias entre grupos son descriptivas: no permiten afirmar que las prácticas causen la vinculación laboral.", "Los créditos son los acumulados hasta el grado y pueden incluir créditos de otros programas cursados en la Universidad."], "graficas": [{"titulo": "Prácticas marcadas en el programa", "cab": ["Categoría", "Egresados"], "filas": [["Prácticas nacionales", 107], ["Prácticas internacionales o mixtas", 4], ["Sin prácticas marcadas", 79]], "nota": "Las internacionales y las mixtas se agrupan porque cada una tiene muy pocos egresados.", "tema": "Prácticas y primer empleo"}, {"titulo": "Experiencia laboral en el año de grado, según prácticas", "cab": ["Situación", "Con prácticas", "Sin prácticas"], "filas": [["Con experiencia laboral en el año de grado", 66, 41], ["Sin experiencia laboral en el año de grado", 45, 38]], "nota": "No cuenta prácticas, monitorías ni voluntariados como experiencia laboral.", "tema": "Prácticas y primer empleo"}, {"titulo": "Créditos promedio acumulados al grado", "cab": ["Indicador", "Créditos"], "filas": [["Intentados", 179.7], ["Aprobados", 175.4]], "nota": "", "tema": "Trayecto académico"}, {"titulo": "Duración del programa frente a lo previsto", "cab": ["Categoría", "Egresados"], "filas": [["Dentro de la duración prevista", 84], ["Con uno o más semestres adicionales", 106]], "nota": "", "tema": "Trayecto académico"}, {"titulo": "Segundos programas", "cab": ["Categoría", "Egresados"], "filas": [["Con título en todos", 101], ["Con segundo programa, sin título en todos", 29], ["Sin segundo programa", 60]], "nota": "Cuenta egresados con segundo programa, hayan obtenido o no el título.", "tema": "Trayecto académico"}, {"titulo": "Opciones académicas registradas", "cab": ["Categoría", "Egresados"], "filas": [["Ninguna", 134], ["Una", 37], ["Más de una", 19]], "nota": "", "tema": "Trayecto académico"}, {"titulo": "Graduados de uno o dos programas", "cab": ["Categoría", "Egresados"], "filas": [["Graduados de un programa", 96], ["Graduados de dos programas", 94]], "nota": "", "tema": "Trayecto académico"}]}]};
+const $ = (s, el = document) => el.querySelector(s);
+const el = (tag, attrs = {}, ...hijos) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  for (const h of hijos.flat()) if (h != null) n.append(h.nodeType ? h : document.createTextNode(h));
+  return n;
+};
+const fmt = (v, pct) => {
+  if (v == null || v === "") return "";
+  if (typeof v !== "number") return String(v);
+  const t = Number.isInteger(v) ? v.toLocaleString("es-CO") : v.toLocaleString("es-CO", {maximumFractionDigits: 1});
+  return pct ? t + "%" : t;
+};
+const esPct = (h) => /%/.test(h);
+const COLORES = ["var(--c1)", "var(--c2)", "var(--c3)", "var(--c4)", "var(--c5)"];
+
+function tipo(g) {
+  const num = g.filas.every((f) => f.slice(1).every((v) => v == null || typeof v === "number"));
+  if (!num) return "tabla";
+  const cats = g.filas.map((f) => String(f[0]));
+  const anios = cats.every((c) => /^\d{4}$/.test(c));
+  const cortas = g.filas.length >= 2 && g.filas.length <= 6 && cats.every((c) => c.length <= 34);
+  return anios || cortas ? "vertical" : "horizontal";
+}
+
+function leyenda(g) {
+  if (g.cab.length <= 2) return null;
+  return el("div", {class: "legend"}, g.cab.slice(1).map((c, i) =>
+    el("span", {}, el("i", {style: `background:${COLORES[i % 5]}`}), c)));
+}
+
+function horizontal(g) {
+  const max = Math.max(1, ...g.filas.flatMap((f) => f.slice(1).filter((v) => typeof v === "number")));
+  const caja = el("div", {class: "hbar", role: "list"});
+  for (const f of g.filas) {
+    caja.append(el("div", {class: "lab", title: String(f[0]), role: "listitem"}, String(f[0])));
+    caja.append(el("div", {class: "pistas"}, f.slice(1).map((v, i) => {
+      const pct = esPct(g.cab[i + 1]);
+      return el("div", {class: "pista", title: `${g.cab[i + 1]}: ${fmt(v, pct)}`},
+        el("div", {class: "tr"}, el("div", {class: "rel", style: `width:${(100 * (v || 0) / max).toFixed(1)}%;background:${COLORES[i % 5]}`})),
+        el("span", {class: "val"}, fmt(v, pct)));
+    })));
+  }
+  return caja;
+}
+
+function vertical(g) {
+  const max = Math.max(1, ...g.filas.flatMap((f) => f.slice(1).filter((v) => typeof v === "number")));
+  const cols = el("div", {class: "vbar"});
+  const labs = el("div", {class: "vlabs"});
+  for (const f of g.filas) {
+    cols.append(el("div", {class: "vcol"}, el("div", {class: "vgrp"}, f.slice(1).map((v, i) => {
+      const pct = esPct(g.cab[i + 1]);
+      return el("div", {style: `height:${(100 * (v || 0) / max * 0.86).toFixed(1)}%;background:${COLORES[i % 5]}`,
+                        title: `${f[0]} / ${g.cab[i + 1]}: ${fmt(v, pct)}`}, el("span", {}, fmt(v, pct)));
+    }))));
+    labs.append(el("div", {}, String(f[0])));
+  }
+  return el("div", {}, cols, labs);
+}
+
+function tabla(g) {
+  const numCol = g.cab.map((_, j) => g.filas.every((f) => f[j] == null || typeof f[j] === "number") && j > 0);
+  const t = el("table", {class: "t"},
+    el("thead", {}, el("tr", {}, g.cab.map((c, j) => el("th", {class: numCol[j] ? "n" : ""}, c)))),
+    el("tbody", {}, g.filas.map((f) => el("tr", {}, f.map((v, j) => el("td", {class: numCol[j] ? "n" : ""}, fmt(v, esPct(g.cab[j]))))))));
+  return el("div", {class: "tablewrap"}, t);
+}
+
+function dibujar(g, modo) {
+  if (modo === "tabla" || tipo(g) === "tabla") return tabla(g);
+  const base = tipo(g) === "vertical" ? vertical(g) : horizontal(g);
+  const lg = leyenda(g);
+  return el("div", {}, lg, base);
+}
+
+function csv(g) {
+  const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const txt = [g.cab, ...g.filas].map((f) => f.map(esc).join(",")).join("\n");
+  const a = el("a", {href: URL.createObjectURL(new Blob(["﻿" + txt], {type: "text/csv;charset=utf-8"})),
+                     download: g.titulo.replace(/[^\w]+/g, "_").slice(0, 60) + ".csv"});
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function ampliar(g, modo) {
+  $("#vt").textContent = g.titulo;
+  $("#vn").textContent = g.nota;
+  const c = $("#vc");
+  c.replaceChildren(dibujar(g, modo));
+  $("#ventana").showModal();
+}
+
+function color(f) { return "var(--accent)"; }
+
+function tarjeta(g) {
+  let modo = "grafica";
+  const cuerpo = el("div", {}, dibujar(g, modo));
+  const bt = el("button", {class: "ghost", "aria-pressed": "false", onclick: (e) => {
+    modo = modo === "grafica" ? "tabla" : "grafica";
+    e.currentTarget.setAttribute("aria-pressed", modo === "tabla");
+    e.currentTarget.textContent = modo === "tabla" ? "Ver gráfica" : "Ver tabla";
+    cuerpo.replaceChildren(dibujar(g, modo));
+  }}, "Ver tabla");
+  if (tipo(g) === "tabla") bt.style.display = "none";
+  return el("article", {class: "card chart-card"},
+    el("h3", {}, g.titulo), g.nota ? el("p", {class: "nota"}, g.nota) : null, cuerpo,
+    el("div", {class: "tools"}, bt,
+      el("button", {class: "ghost", onclick: () => ampliar(g, modo)}, "Ampliar"),
+      el("button", {class: "ghost", onclick: () => csv(g)}, "Descargar CSV")));
+}
+
+function vistaFuente(f) {
+  const cont = el("div", {style: `--fa:${color(f)}`});
+  cont.append(el("div", {class: "panel card", style: "border-top:3px solid var(--accent)"}, el("h2", {}, f.titulo), el("div", {class: "sub"}, f.fuente.split(".")[0])));
+  const buscador = el("input", {type: "search", placeholder: "Buscar en las gráficas…", "aria-label": "Buscar"});
+  const cuenta = el("span", {class: "sub"});
+  cont.append(el("div", {class: "barra"}, buscador, cuenta));
+  const tarjetas = f.graficas.map((g) => ({g, nodo: tarjeta(g),
+    texto: (g.titulo + " " + g.nota + " " + g.filas.map((x) => x[0]).join(" ")).toLowerCase()}));
+  const temas = [...new Set(f.graficas.map((g) => g.tema))];
+  const secciones = temas.map((tm) => {
+    const grilla = el("div", {class: "grid"});
+    const mias = tarjetas.filter((t) => t.g.tema === tm);
+    mias.forEach((t) => grilla.append(t.nodo));
+    const sec = el("section", {class: "tema", id: "tema-" + temas.indexOf(tm)},
+      el("h2", {class: "tema-t"}, tm, el("span", {}, `${mias.length}`)), grilla);
+    return {sec, mias, tm};
+  });
+  if (temas.length > 1) cont.append(el("div", {class: "chips"}, secciones.map((x) =>
+    el("button", {class: "chip", onclick: () => x.sec.scrollIntoView({behavior: "smooth", block: "start"})}, x.tm))));
+  const filtrar = () => {
+    const q = buscador.value.trim().toLowerCase();
+    let n = 0;
+    tarjetas.forEach((t) => { const ok = !q || t.texto.includes(q); t.nodo.hidden = !ok; n += ok; });
+    secciones.forEach((x) => { x.sec.hidden = x.mias.every((t) => t.nodo.hidden); });
+    cuenta.textContent = `${n} de ${tarjetas.length} gráficas`;
+  };
+  buscador.addEventListener("input", filtrar);
+  filtrar();
+  secciones.forEach((x) => cont.append(x.sec));
+  return cont;
+}
+
+function vistaInicio() {
+  const cont = el("div", {class: "inicio"});
+  for (const f of DATA.fuentes) {
+    cont.append(el("div", {class: "card", style: `--fa:${color(f)}`}, el("h2", {}, f.pestana),
+      el("div", {class: "n"}, String(f.graficas.length)), el("div", {class: "sub"}, "gráficas · " + f.fuente.replace("Fuente: ", "")),
+      el("button", {class: "ghost", onclick: () => ir(f.id)}, "Ver gráficas")));
+  }
+  const aviso = el("section", {class: "panel card warn", style: "margin-top:16px"}, el("h2", {}, "Antes de interpretar"),
+    el("ul", {},
+      el("li", {}, "Las fuentes miden cosas distintas: Talent Insights cuenta perfiles de toda la historia, Recruiter es una muestra de egresados, Jobs es una foto del día de la descarga y los productos institucionales describen a los egresados del listado oficial."),
+      el("li", {}, "En Vacantes, las tarjetas de LinkedIn Jobs y las de otras bolsas de empleo van juntas pero no se suman: son fuentes y fechas distintas."),
+      el("li", {}, "Por eso el tablero no compara cifras entre fuentes."),
+      el("li", {}, "No sumes cifras entre fuentes ni entre búsquedas: una persona puede aparecer en varias."),
+      el("li", {}, "Solo hay datos agregados; ninguna gráfica identifica personas.")));
+  return el("div", {}, cont, aviso);
+}
+
+function ir(id) {
+  const f = DATA.fuentes.find((x) => x.id === id);
+  $("#vista").replaceChildren(f ? vistaFuente(f) : vistaInicio());
+  document.querySelectorAll("#tabs button").forEach((b) => b.setAttribute("aria-selected", b.dataset.id === (f ? id : "inicio")));
+  history.replaceState(null, "", "#" + (f ? id : "inicio"));
+  scrollTo(0, 0);
+}
+
+function iniciar() {
+  const tabs = $("#tabs");
+  [{id: "inicio", pestana: "Inicio"}, ...DATA.fuentes].forEach((f) =>
+    tabs.append(el("button", {role: "tab", "data-id": f.id, onclick: () => ir(f.id)}, f.pestana)));
+  $("#sub").textContent = `Datos agregados de LinkedIn, bolsas de empleo y registros institucionales. Generado el ${DATA.generado}.`;
+  $("#pie").textContent = "Fuentes: LinkedIn Talent Insights, Recruiter y Jobs, bolsas de empleo colombianas y registros institucionales. Cifras agregadas, sin datos de personas.";
+  $("#cerrar").addEventListener("click", () => $("#ventana").close());
+  $("#ventana").addEventListener("click", (e) => { if (e.target.id === "ventana") e.target.close(); });
+  const tema = $("#tema");
+  const raiz = document.documentElement;
+  const oscuro = () => raiz.dataset.theme === "dark" || (!raiz.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  const pintar = () => { tema.textContent = oscuro() ? "Modo claro" : "Modo oscuro"; };
+  tema.addEventListener("click", () => { raiz.dataset.theme = oscuro() ? "light" : "dark"; pintar(); });
+  pintar();
+  ir(location.hash.slice(1) || "inicio");
+}
+iniciar();
+</script>
+</body>
+</html>
