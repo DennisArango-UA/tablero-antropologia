@@ -348,6 +348,11 @@ function vistaInicio() {
       el("div", {class: "sub", style: "flex:1"}, f.descripcion || f.fuente.replace("Fuente: ", "")),
       el("button", {class: "ghost", onclick: () => ir(f.id)}, "Ver gráficas")));
   }
+  for (const sec of (DATA.secciones_nb || [])) {
+    cont.append(el("div", {class: "card"}, el("h2", {}, sec.pestana),
+      el("div", {class: "sub", style: "flex:1"}, sec.intro || ""),
+      el("button", {class: "ghost", onclick: () => ir(sec.id)}, "Abrir")));
+  }
   const aviso = el("section", {class: "panel card warn", style: "margin-top:16px"}, el("h2", {}, "Antes de interpretar"),
     el("ul", {},
       el("li", {}, "Cada fuente mide algo distinto y en fechas distintas: el tablero no compara ni suma cifras entre fuentes."),
