@@ -176,6 +176,54 @@ dialog::backdrop{background:rgba(10,15,25,.55)}
 .nb-frame{width:100%;height:72vh;border:1px solid var(--line);border-radius:6px;background:#fff;margin-top:16px;display:block}
 footer{color:var(--muted);font-size:12.5px;padding:0 0 30px}
 @media (max-width:560px){.hbar{grid-template-columns:minmax(80px,40%) 1fr}.wrap{padding:0 12px}.top{flex-wrap:wrap}.tools .ghost{flex:1 1 auto;text-align:center}.vbar{height:200px}.grid{gap:12px}dialog{width:98vw}.dlg-body{padding:10px 12px 16px}}
+
+/* ---- Rediseño "dashboard vivo" ---- */
+:root{--ga:#364775;--r:14px;--shadow:0 1px 2px rgba(28,34,54,.06),0 6px 18px rgba(28,34,54,.07)}
+header{background:linear-gradient(120deg,var(--hero1) 0%,#2b3a6b 60%,#3b4f93 100%);border-bottom:3px solid #F36F0F}
+h1{letter-spacing:.2px}
+nav button{border-radius:999px}
+nav button[aria-selected="true"]{box-shadow:0 2px 10px rgba(243,111,15,.45);background:#F36F0F;color:#fff;border-color:#F36F0F}
+body{background:radial-gradient(1100px 380px at 85% -80px,color-mix(in srgb,#F36F0F 10%,transparent),transparent),radial-gradient(900px 400px at 0% 0,color-mix(in srgb,#364775 10%,transparent),transparent),var(--bg);background-attachment:fixed}
+.card{border-radius:var(--r)}
+.hero{position:relative;overflow:hidden;padding:30px 28px 26px;border:0!important;color:#fff;background:linear-gradient(125deg,#1C2236 0%,#2f3f78 55%,#F36F0F 140%)}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(254,170,70,.45),transparent 70%)}
+.hero h2{font-size:clamp(22px,4vw,32px);line-height:1.15;margin:0 0 10px;color:#fff;position:relative}
+.hero .sub{color:rgba(255,255,255,.88);position:relative}
+.hero-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px;position:relative;z-index:1}
+.hero-stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(3px);border-radius:12px;padding:12px 14px}
+.hero-stat b{display:block;font-size:clamp(26px,4vw,38px);line-height:1;color:#FEAA46;font-variant-numeric:tabular-nums}
+.hero-stat span{display:block;margin-top:6px;font-size:12px;color:rgba(255,255,255,.86);line-height:1.25}
+.inicio-grupo{display:flex;align-items:center;gap:10px;font-size:19px;margin:34px 0 4px}
+.inicio-grupo .ico{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;font-size:18px;background:color-mix(in srgb,var(--ga) 16%,transparent)}
+.inicio .card{border-top:0;border-left:5px solid var(--ga);background:linear-gradient(160deg,color-mix(in srgb,var(--ga) 9%,var(--panel)),var(--panel) 55%);min-height:170px}
+.inicio .card:hover{box-shadow:0 12px 28px rgba(28,34,54,.18);transform:translateY(-4px)}
+.inicio .card h2{font-size:16px}
+.inicio .card button.ghost{border-radius:999px;background:var(--ga);border-color:var(--ga);color:#fff;padding:6px 16px;font-weight:700}
+.inicio .card button.ghost:hover{filter:brightness(1.12)}
+.chart-card{border-top:0;position:relative;overflow:hidden;animation:subir .5s ease both}
+.chart-card::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#364775,#F36F0F)}
+.chart-card{padding-top:20px}
+.chart-card:hover{box-shadow:0 10px 26px rgba(28,34,54,.14)}
+.chart-card h3{font-size:14.5px}
+.tema-t{font-size:15px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,color-mix(in srgb,#F36F0F 14%,var(--panel)),transparent)}
+.tema-t::before{width:8px;height:26px;border-radius:4px;background:linear-gradient(#F36F0F,#FEAA46)}
+.kpi{border-radius:14px;border:0;color:#fff;background:linear-gradient(135deg,#364775,#4b63a8);box-shadow:0 6px 16px rgba(54,71,117,.28);animation:subir .5s ease both}
+.kpi:nth-child(3n+2){background:linear-gradient(135deg,#d85a05,#F36F0F 60%,#FEAA46)}
+.kpi:nth-child(3n){background:linear-gradient(135deg,#2a8a8a,#3ab0a4)}
+.kpi-num{color:#fff;font-size:34px}
+.kpi-lab{color:rgba(255,255,255,.9)}
+.kpi *{color:inherit}
+.fbtn{transition:all .15s}.fbtn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.filtros{border-radius:14px;box-shadow:0 6px 20px rgba(28,34,54,.12)}
+.pista .rel,.apil-seg,.dv-seg,.vgrp div{background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0))}
+.pista .rel{transform-origin:left;animation:crece .8s cubic-bezier(.2,.7,.2,1) both}
+.vgrp div{transform-origin:bottom;animation:creceV .8s cubic-bezier(.2,.7,.2,1) both}
+.apil-seg{animation:fade .8s ease both}
+@keyframes subir{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes creceV{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -812,11 +860,14 @@ function vistaFuente(f) {
 }
 
 function vistaInicio() {
-  const intro = el("section", {class: "panel card hero", style: "border-top:3px solid var(--accent)"},
+  const stats = [["190", "egresados caracterizados"], ["149", "perfiles de LinkedIn analizados"],
+    ["86", "respuestas de la encuesta"], ["175", "vacantes analizadas"]];
+  const intro = el("section", {class: "panel card hero"},
     el("h2", {}, "Empleabilidad de los egresados de Antropología"),
     el("p", {class: "sub", style: "margin:0;max-width:62ch"},
       "Trayectoria laboral y formación de los egresados del programa, con datos agregados de LinkedIn, " +
-      "bolsas de empleo, registros institucionales y la encuesta de seguimiento. Elige una sección."));
+      "bolsas de empleo, registros institucionales y la encuesta de seguimiento. Elige una sección."),
+    el("div", {class: "hero-stats"}, ...stats.map(([n, l]) => el("div", {class: "hero-stat"}, el("b", {}, n), el("span", {}, l)))));
   const cont = el("div", {});
   const cardFuente = (f) => el("div", {class: "card", style: `--fa:${color(f)}`}, el("h2", {}, f.pestana),
     el("div", {class: "sub", style: "flex:1"}, f.descripcion || f.fuente.replace("Fuente: ", "")),
@@ -830,9 +881,11 @@ function vistaInicio() {
     const items = gr.ids.map((id) => DATA.fuentes.find((x) => x.id === id) ||
       (DATA.secciones_nb || []).find((x) => x.id === id)).filter(Boolean);
     if (!items.length) continue;
-    cont.append(el("h2", {class: "inicio-grupo"}, gr.lab));
+    const ga = {fuente: "#364775", integrado: "#F36F0F", recursos: "#2a8a8a"}[gr.gid] || "#364775";
+    const ico = {fuente: "📊", integrado: "🔗", recursos: "📚"}[gr.gid] || "";
+    cont.append(el("h2", {class: "inicio-grupo", style: `--ga:${ga}`}, el("span", {class: "ico"}, ico), gr.lab));
     if (gr.desc) cont.append(el("p", {class: "inicio-grupo-sub"}, gr.desc));
-    const grid = el("div", {class: "inicio"});
+    const grid = el("div", {class: "inicio", style: `--ga:${ga}`});
     items.forEach((it) => grid.append(DATA.fuentes.includes(it) ? cardFuente(it) : cardSec(it)));
     cont.append(grid);
   }
