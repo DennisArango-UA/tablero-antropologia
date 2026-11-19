@@ -987,6 +987,8 @@ const GRUPOS = [
    desc: "Material de apoyo y cuadernos interactivos sobre los egresados.", ids: ["ficha"]},
 ];
 const ultimoSub = {};
+const RUTA_SUB = {cruces: "analisis"};   // nombre de la subpestaña en la URL (el id interno no cambia)
+const SUB_RUTA = {analisis: "cruces"};
 let PORID = new Map();
 function grupoDe(id) { return GRUPOS.find((g) => g.ids.includes(id)) || GRUPOS[0]; }
 
@@ -1009,7 +1011,8 @@ function ir(id, conservar) {
   } else {
     sub.hidden = true;
   }
-  history.replaceState(null, "", "#" + activo);
+  // Ruta: #fuente, #integrado, #recursos (grupo, con su primera subpestaña) o #grupo/subpestaña (p. ej. #integrado/cruces).
+  history.replaceState(null, "", "#" + (activo === "inicio" ? "inicio" : subs[0] === activo ? gr.gid : gr.gid + "/" + (RUTA_SUB[activo] || activo)));
   scrollTo(0, conservar ? y : 0);
 }
 
@@ -1037,7 +1040,13 @@ function iniciar() {
   altoCab();
   addEventListener("resize", altoCab);
   if (window.ResizeObserver) new ResizeObserver(altoCab).observe(cab);
-  ir(location.hash.slice(1) || "inicio");
+  const ruta = location.hash.slice(1).split("/");
+  const gr0 = GRUPOS.find((g) => g.gid === ruta[0]);
+  if (ruta[1] && SUB_RUTA[ruta[1]]) ruta[1] = SUB_RUTA[ruta[1]];
+  // Acepta #grupo, #grupo/subpestaña y los enlaces antiguos con el id de la subpestaña (#ti, #cruces).
+  const inicial = gr0 ? (gr0.ids.includes(ruta[1]) && PORID.has(ruta[1]) ? ruta[1] : gr0.ids.find((id) => PORID.has(id)))
+    : ruta[0] || "inicio";
+  ir(inicial || "inicio");
 }
 iniciar();
 </script>
